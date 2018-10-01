@@ -9,20 +9,21 @@ namespace Day3Database.Repositories
 {
     public class EmployeeRepository : RepositoryBase<Employee>
     {
-        private readonly string insertStatement = @"Insert into [Employee] (EmployeeID, FirstName, MiddleName, LastName, DepartmentID )
+        private readonly string insertStatement = @"Insert into [Employee] (EmployeeID, FirstName, MiddleName, LastName, DepartmentID, HireDate)
                                                     VALUES
-                                                ( @employeeID, @firstName, @middleName, @lastName, @departmentID)";
+                                                ( @employeeID, @firstName, @middleName, @lastName, @departmentID, @hireDate)";
         private readonly string deleteStatement = @"Delete from [Employee] Where EmployeeID = @employeeID";
 
         private readonly string updateStatement = @"Update [Employee] SET
                                                     FirstName = @firstName, 
                                                     MiddleName = @middleName,
                                                     LastName = @lastName,
-                                                    DepartmentID = @departmentID
+                                                    DepartmentID = @departmentID,
+                                                    HireDate = @hireDate
                                                     Where
                                                     EmployeeID = @employeeID";
 
-        private readonly string retrieveStatement = @"Select EmployeeID, FirstName, MiddleName, LastName, DEPARTMENT.DepartmentID
+        private readonly string retrieveStatement = @"Select EmployeeID, FirstName, MiddleName, LastName, DEPARTMENT.DepartmentID, HireDate
                                                     FROM [Employee] INNER JOIN DEPARTMENT ON EMPLOYEE.DepartmentID = DEPARTMENT.DepartmentID ";
         private readonly string retrieveFilter = @"Where EmployeeID = @employeeID";
 
@@ -48,6 +49,14 @@ namespace Day3Database.Repositories
             employee.MiddleName = reader.GetString(2);
             employee.LastName = reader.GetString(3);
             employee.DepartmentID = reader.GetGuid(4);
+            if (reader.IsDBNull(5))
+            {
+                employee.HireDate = null;
+            }
+            else if (!reader.IsDBNull(5))
+            {
+                employee.HireDate = reader.GetDateTime(5);
+            }
             return employee;
         }
 
@@ -63,6 +72,16 @@ namespace Day3Database.Repositories
                             .Value = newEntity.LastName;
             command.Parameters.Add("@departmentID", SqlDbType.UniqueIdentifier)
                             .Value = newEntity.DepartmentID;
+            if (newEntity.HireDate != null)
+            {
+                command.Parameters.Add("@hireDate", SqlDbType.DateTime)
+                        .Value = newEntity.HireDate;
+            }
+            else if (newEntity.HireDate == null)
+            {
+                command.Parameters.Add("@hireDate", SqlDbType.DateTime)
+                        .Value = DBNull.Value;
+            }
         }
 
         protected override void LoadRetrieveParameter(SqlCommand command, Guid id)
@@ -82,6 +101,8 @@ namespace Day3Database.Repositories
                             .Value = entity.LastName;
             command.Parameters.Add("@departmentID", SqlDbType.UniqueIdentifier)
                             .Value = entity.DepartmentID;
+            command.Parameters.Add("@hireDate", SqlDbType.DateTime)
+               .Value = entity.HireDate;
         }
     }
 }

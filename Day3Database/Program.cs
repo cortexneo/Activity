@@ -10,9 +10,9 @@ namespace Day3Database
         static void Main(string[] args)
         {
             var registrar = CreateDepartment("Registrar", true);
-            var emp = CreateEmployee("Ron", "Agravante", "Natividad", registrar.DepartmentID);
-            CreateEmployee("Renz", "Agravante", "Natividad", registrar.DepartmentID);
-            CreateEmployee("Winkle", "Agravante", "Natividad", registrar.DepartmentID);
+            var emp = CreateEmployee("Ron", "Agravante", "Natividad", registrar.DepartmentID, null);
+            CreateEmployee("Renz", "Agravante", "Natividad", registrar.DepartmentID, null);
+            CreateEmployee("Winkle", "Agravante", "Natividad", registrar.DepartmentID, null);
             var employee = RetrieveEmployee(emp.EmployeeID);
             UpdateEmployee(employee);
             var allEmployee = RetrieveAllEmployees();
@@ -57,7 +57,7 @@ namespace Day3Database
             return repository.Retrieve(employeeID);
         }
 
-        static Employee CreateEmployee(string firstName, string middleName, string lastName, Guid departmentID)
+        static Employee CreateEmployee(string firstName, string middleName, string lastName, Guid departmentID, DateTime? hireDate)
         {
             var employee = new Employee
             {
@@ -65,7 +65,9 @@ namespace Day3Database
                 FirstName = firstName,
                 MiddleName = middleName,
                 LastName = lastName,
-                DepartmentID = departmentID
+                DepartmentID = departmentID,
+                HireDate = hireDate
+
             };
             var repository = new EmployeeRepository();
             var newEmployee = repository.Create(employee);
@@ -83,6 +85,7 @@ namespace Day3Database
             employee.MiddleName = "Test";
             employee.LastName = "Test";
             employee.DepartmentID = new Guid("0fa7b858-9640-415b-8e7b-6a6cbdbfe934");
+            employee.HireDate = DateTime.Now;
             var repository = new EmployeeRepository();
             var newEmployee = repository.Update(employee);
         }

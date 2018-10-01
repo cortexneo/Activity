@@ -13,5 +13,6 @@ namespace Day3Database.Models
         //public string Department { get; set; }
         public Department Department { get; set; }
         public Guid DepartmentID { get; set; }
+        public DateTime? HireDate { get; set; }
     }
 }
